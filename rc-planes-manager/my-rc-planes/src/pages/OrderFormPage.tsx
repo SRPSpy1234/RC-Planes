@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import emailjs from 'emailjs-com';
+import { supabase } from '../supabaseClient';
 
 const accent = '#2de2e6';
 const defaultParts = ['Motor', 'ESC', 'Battery', 'Servos', 'Propeller', 'Receiver', 'Other'];
@@ -30,7 +31,7 @@ const OrderFormPage: React.FC = () => {
     setForm({ ...form, parts: updatedParts });
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     // Prepare template params for EmailJS
     const stats = `You ordered a ${form.experience} Level, ${form.planeType} Plane.`;
@@ -53,9 +54,25 @@ const OrderFormPage: React.FC = () => {
       stats,
       parts: partsList,
     };
-    // Save order to localStorage for menu display
-    const prevOrders = JSON.parse(localStorage.getItem('planeOrders') || '[]');
-    localStorage.setItem('planeOrders', JSON.stringify([...prevOrders, templateParams]));
+    // Save order to Supabase
+    const { error } = await supabase.from('orders').insert([{
+      name: form.name,
+      email: form.email,
+      phone: form.phone,
+      budget: form.budget,
+      experience: form.experience,
+      power: form.power,
+      speed: form.speed,
+      planeType: form.planeType,
+      customSpecs: form.customSpecs,
+      notes: form.notes,
+      stats,
+      parts: partsList,
+    }]);
+    if (error) {
+      alert('Failed to save order to cloud. Please try again or email orders@flighthq.net');
+      return;
+    }
     emailjs.send('service_edpvv6a', 'template_d4vh8s3', templateParams, 'YMAXQAlNRtSwNjmiu')
       .then(() => {
         setSubmitted(true);

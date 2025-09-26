@@ -1,4 +1,3 @@
-
 body {
   background: #181c22;
   color: #eaf6fb;
@@ -39,11 +38,16 @@ input, select, textarea {
   box-shadow: 0 2px 8px rgba(0,0,0,0.18);
   margin-bottom: 8px;
   transition: background 0.2s, color 0.2s;
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .main-btn:hover, button[type="submit"]:hover, button[type="button"]:hover {
   background: linear-gradient(90deg, #0fa3b1 0%, #2de2e6 100%);
   color: #fff;
+  text-decoration: none;
 }
 
 form {

@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../App';
 
 const defaultParts = ['Motor', 'ESC', 'Battery', 'Servos', 'Propeller', 'Receiver', 'Other'];
 
@@ -7,7 +8,8 @@ const PlaneForm: React.FC = () => {
 	const [name, setName] = useState('');
 	const [components, setComponents] = useState<{ [key: string]: { value: string; link: string } }>({});
 	const [image, setImage] = useState<string | null>(null);
-	const navigate = useNavigate();
+			const navigate = useNavigate();
+	const { user } = useAuth();
 
 	const handleChange = (part: string, field: 'value' | 'link', value: string) => {
 		setComponents(prev => ({
@@ -39,13 +41,16 @@ const PlaneForm: React.FC = () => {
 			name,
 			components,
 			image,
+			user_id: user ? user.id : null, // Add user_id if user is logged in
 		};
 		localStorage.setItem('planes', JSON.stringify([...planes, newPlane]));
 		navigate('/planes');
 	};
 
 	return (
-	<form onSubmit={handleSubmit} style={{ maxWidth: 520, margin: '0 auto', padding: '24px', background: '#232a34', borderRadius: '12px', boxShadow: '0 2px 8px rgba(0,0,0,0.18)' }}>
+		<>
+			<button onClick={() => navigate('/')} style={{ position: 'absolute', top: 16, left: 16, background: '#2de2e6', color: '#181c22', border: 'none', borderRadius: 8, padding: '6px 18px', fontWeight: 700, cursor: 'pointer', zIndex: 10 }}>Home</button>
+			<form onSubmit={handleSubmit} style={{ maxWidth: 520, margin: '0 auto', padding: '24px', background: '#232a34', borderRadius: '12px', boxShadow: '0 2px 8px rgba(0,0,0,0.18)' }}>
 			<h2>Add New Plane</h2>
 			<div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '8px' }}>
 				<label style={{ minWidth: 100, marginBottom: 0 }}>
@@ -82,6 +87,7 @@ const PlaneForm: React.FC = () => {
 			))}
 			<button type="submit">Save Plane</button>
 		</form>
+		</>
 	);
 };
 

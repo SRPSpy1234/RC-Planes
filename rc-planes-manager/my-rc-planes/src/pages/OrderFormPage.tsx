@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import emailjs from 'emailjs-com';
 import { supabase } from '../supabaseClient';
+import { useNavigate } from 'react-router-dom';
 
 const accent = '#2de2e6';
 const defaultParts = ['Motor', 'ESC', 'Battery', 'Servos', 'Propeller', 'Receiver', 'Other'];
@@ -19,6 +20,7 @@ const OrderFormPage: React.FC = () => {
     notes: '',
     parts: defaultParts.map(() => ({ value: '', link: '', leaveToHQ: false })),
   });
+  const navigate = useNavigate();
   const [submitted, setSubmitted] = useState(false);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
@@ -93,6 +95,7 @@ const OrderFormPage: React.FC = () => {
 
   return (
     <div style={{ maxWidth: 600, margin: '48px auto', background: '#232a34', borderRadius: 12, boxShadow: '0 2px 8px rgba(0,0,0,0.18)', padding: 32, color: '#eaf6fb' }}>
+      <button onClick={() => navigate('/')} style={{ position: 'absolute', top: 16, left: 16, background: '#2de2e6', color: '#181c22', border: 'none', borderRadius: 8, padding: '6px 18px', fontWeight: 700, cursor: 'pointer', zIndex: 10 }}>Home</button>
       <h2 style={{ color: accent, textAlign: 'center', marginBottom: 24 }}>RC Plane Order Form</h2>
       <form onSubmit={handleSubmit}>
         <div style={{ marginBottom: 18 }}>

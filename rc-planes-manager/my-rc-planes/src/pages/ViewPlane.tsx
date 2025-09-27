@@ -39,6 +39,7 @@ const ViewPlane: React.FC = () => {
 
 	return (
 		<div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minHeight: '70vh' }}>
+			<button onClick={() => navigate('/')} style={{ position: 'absolute', top: 16, left: 16, background: '#2de2e6', color: '#181c22', border: 'none', borderRadius: 8, padding: '6px 18px', fontWeight: 700, cursor: 'pointer', zIndex: 10 }}>Home</button>
 			<div style={{ position: 'relative', background: '#232a34', borderRadius: '16px', boxShadow: '0 2px 12px rgba(0,0,0,0.18)', padding: '32px', maxWidth: 520, width: '100%', margin: '0 auto' }}>
 				<button
 					style={{ position: 'absolute', top: 18, right: 18, background: '#2de2e6', color: '#181c22', border: 'none', borderRadius: '50%', width: 40, height: 40, fontSize: 22, cursor: 'pointer', boxShadow: '0 2px 8px rgba(0,0,0,0.18)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 2 }}

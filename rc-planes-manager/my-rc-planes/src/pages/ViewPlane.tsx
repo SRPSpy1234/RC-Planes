@@ -1,21 +1,41 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
+import { supabase } from '../supabaseClient';
+import { useAuth } from '../App';
 
 const defaultParts = ['Motor', 'ESC', 'Battery', 'Servos', 'Propeller', 'Receiver', 'Other'];
+
 
 const ViewPlane: React.FC = () => {
 	const { id } = useParams();
 	const navigate = useNavigate();
+	const { user } = useAuth();
 	const [plane, setPlane] = useState<any>(null);
+	const [loading, setLoading] = useState(true);
+	const [error, setError] = useState('');
 
 	useEffect(() => {
-		const stored = localStorage.getItem('planes');
-		const planes = stored ? JSON.parse(stored) : [];
-		const found = planes.find((p: any) => p.id === id);
-		setPlane(found);
-	}, [id]);
+		if (!id || !user) return;
+		setLoading(true);
+		supabase
+			.from('planes')
+			.select('*')
+			.eq('id', id)
+			.eq('user_id', user.id)
+			.single()
+			.then(({ data, error }) => {
+				if (error || !data) {
+					setError('Plane not found.');
+					setPlane(null);
+				} else {
+					setPlane(data);
+				}
+				setLoading(false);
+			});
+	}, [id, user]);
 
-	if (!plane) return <div>Plane not found.</div>;
+	if (loading) return <div style={{ color: '#2de2e6', textAlign: 'center', marginTop: 80 }}>Loading...</div>;
+	if (error || !plane) return <div style={{ color: '#ff6f61', textAlign: 'center', marginTop: 80 }}>{error || 'Plane not found.'}</div>;
 
 	const openAllLinks = () => {
 		defaultParts.forEach(part => {

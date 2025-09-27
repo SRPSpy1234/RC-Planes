@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useAuth } from '../App';
 import emailjs from 'emailjs-com';
 import { supabase } from '../supabaseClient';
 import { useNavigate } from 'react-router-dom';
@@ -7,6 +8,15 @@ const accent = '#2de2e6';
 const defaultParts = ['Motor', 'ESC', 'Battery', 'Servos', 'Propeller', 'Receiver', 'Other'];
 
 const OrderFormPage: React.FC = () => {
+  const { user } = useAuth();
+  if (!user || !user.email_confirmed_at) {
+    return (
+      <div style={{ maxWidth: 480, margin: '48px auto', background: '#232a34', borderRadius: 12, boxShadow: '0 2px 8px rgba(0,0,0,0.18)', padding: 32, color: '#eaf6fb', textAlign: 'center' }}>
+        <h2 style={{ color: accent }}>Login Required</h2>
+        <p>You must be logged in with a confirmed email address to place an order.</p>
+      </div>
+    );
+  }
   const [form, setForm] = useState({
     name: '',
     email: '',

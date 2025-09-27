@@ -1,9 +1,12 @@
 
 import React, { useState, useEffect, createContext, useContext } from 'react';
-import { BrowserRouter as Router, Routes, Route, Link, Navigate } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Link, Navigate, useNavigate } from 'react-router-dom';
 import PlaneList from './components/PlaneList';
 import PlaneForm from './components/PlaneForm';
 import EditPlane from './pages/EditPlane';
+import InspirationPreBuilt from './pages/InspirationPreBuilt';
+import AddPrebuiltPlane from './pages/AddPrebuiltPlane';
+import EditPrebuiltPlane from './pages/EditPrebuiltPlane';
 import ViewPlane from './pages/ViewPlane';
 import OrderFormPage from './pages/OrderFormPage';
 import PlaneOrdersMenu from './components/PlaneOrdersMenu';
@@ -85,8 +88,10 @@ function LoginModal({ onClose }: { onClose: () => void }) {
       else {
         // Optionally, insert username/email mapping into a public users table for lookup
         await supabase.from('users').insert([{ username, email }]);
-        setUser(data.user);
-        onClose();
+        // Immediately sign out after signup to force email confirmation
+        await supabase.auth.signOut();
+        setUser(null);
+        setError('Account created! Please check your email and confirm before logging in.');
       }
     }
   };
@@ -128,6 +133,7 @@ const Home: React.FC<{ onShowOrders: () => void; onShowLogin: () => void; isAdmi
       <div style={{ display: 'flex', gap: '24px', marginBottom: '32px', justifyContent: 'center' }}>
         <Link to="/planes" className="main-btn" style={{ minWidth: '180px', fontSize: '1.1rem' }}>View All Planes</Link>
         <Link to="/add" className="main-btn" style={{ minWidth: '180px', fontSize: '1.1rem' }}>Add New Plane</Link>
+        <Link to="/inspiration-prebuilt" className="main-btn" style={{ minWidth: '180px', fontSize: '1.1rem' }}>Inspiration/Pre-Built</Link>
         <Link to="/order" className="main-btn" style={{ minWidth: '180px', fontSize: '1.1rem' }}>Place Order</Link>
         {isAdmin && <button className="main-btn" style={{ minWidth: '180px', fontSize: '1.1rem' }} onClick={onShowOrders}>Orders</button>}
       </div>
@@ -150,6 +156,55 @@ const Home: React.FC<{ onShowOrders: () => void; onShowLogin: () => void; isAdmi
 };
 
 
+
+
+const NavMenu: React.FC<{ isAdmin: boolean }> = ({ isAdmin }) => {
+  const navigate = useNavigate();
+  const [open, setOpen] = useState(false);
+  // Close dropdown on outside click
+  useEffect(() => {
+    if (!open) return;
+    const handler = (e: MouseEvent) => {
+      const menu = document.getElementById('nav-menu-dropdown');
+      if (menu && !menu.contains(e.target as Node)) setOpen(false);
+    };
+    document.addEventListener('mousedown', handler);
+    return () => document.removeEventListener('mousedown', handler);
+  }, [open]);
+  return (
+  <div style={{ position: 'absolute', left: 18, top: '50%', transform: 'translateY(-50%)', zIndex: 100 }}>
+      <button
+        onClick={() => setOpen(v => !v)}
+        style={{ background: '#181c22', color: '#2de2e6', border: 'none', borderRadius: 8, padding: '8px 22px 8px 16px', fontWeight: 700, fontSize: 16, cursor: 'pointer', boxShadow: open ? '0 2px 8px rgba(0,0,0,0.18)' : undefined, position: 'relative' }}
+      >
+        Menu ▾
+      </button>
+      {open && (
+        <div id="nav-menu-dropdown" style={{ position: 'absolute', top: 44, left: 0, background: '#232a34', color: '#eaf6fb', borderRadius: 10, boxShadow: '0 2px 12px rgba(0,0,0,0.18)', minWidth: 210, padding: '8px 0', zIndex: 200 }}>
+          <MenuItem label="Home" onClick={() => { setOpen(false); navigate('/'); }} />
+          <MenuItem label="View All Planes" onClick={() => { setOpen(false); navigate('/planes'); }} />
+          <MenuItem label="Add New Plane" onClick={() => { setOpen(false); navigate('/add'); }} />
+          <MenuItem label="Inspiration/Pre-Built" onClick={() => { setOpen(false); navigate('/inspiration-prebuilt'); }} />
+          <MenuItem label="Place Order" onClick={() => { setOpen(false); navigate('/order'); }} />
+          {isAdmin && <MenuItem label="Orders (Admin)" onClick={() => { setOpen(false); navigate('/'); setTimeout(() => { const btn = document.querySelector('.main-btn'); if (btn) (btn as HTMLElement).click(); }, 100); }} />}
+          {isAdmin && <MenuItem label="Add Inspiration Plane" onClick={() => { setOpen(false); navigate('/add-prebuilt'); }} />}
+        </div>
+      )}
+    </div>
+  );
+};
+
+const MenuItem: React.FC<{ label: string; onClick: () => void }> = ({ label, onClick }) => (
+  <div
+    onClick={onClick}
+    style={{ padding: '10px 22px', cursor: 'pointer', fontWeight: 500, fontSize: 16, borderBottom: '1px solid #2de2e6', background: 'none' }}
+    onMouseOver={e => (e.currentTarget.style.background = '#181c22')}
+    onMouseOut={e => (e.currentTarget.style.background = 'none')}
+  >
+    {label}
+  </div>
+);
+
 const App: React.FC = () => {
   const { user, setUser, loading } = useAuth();
   const [showOrdersMenu, setShowOrdersMenu] = useState(false);
@@ -167,10 +222,17 @@ const App: React.FC = () => {
 
   return (
     <div className="app-container">
-      <div style={{ width: '100%', background: '#2de2e6', padding: '18px 0', textAlign: 'center', color: '#181c22', fontWeight: 700, fontSize: '2rem', letterSpacing: '2px', boxShadow: '0 2px 8px rgba(0,0,0,0.12)' }}>
-        FlightHQ
-      </div>
       <Router>
+        <div style={{ width: '100%', background: '#2de2e6', padding: '18px 0', position: 'relative', display: 'flex', alignItems: 'center', boxShadow: '0 2px 8px rgba(0,0,0,0.12)' }}>
+          {/* Dropdown Home/Menu */}
+          <div style={{ width: 180, display: 'flex', alignItems: 'center' }}>
+            <NavMenu isAdmin={isAdmin} />
+          </div>
+          <div style={{ flex: 1, display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+            <img src="/logo_flighthq.svg" alt="FlightHQ Logo" style={{ height: 56, maxWidth: '90%', objectFit: 'contain' }} />
+          </div>
+          <div style={{ width: 180 }} />
+        </div>
         <Routes>
           <Route path="/" element={<Home onShowOrders={() => setShowOrdersMenu(true)} onShowLogin={() => setShowLogin(true)} isAdmin={isAdmin} user={user} onLogout={handleLogout} />} />
           <Route path="/planes" element={<PlaneList />} />
@@ -178,6 +240,10 @@ const App: React.FC = () => {
           <Route path="/edit/:id" element={<EditPlane />} />
           <Route path="/view/:id" element={<ViewPlane />} />
           <Route path="/order" element={<OrderFormPage />} />
+          <Route path="/inspiration-prebuilt" element={<InspirationPreBuilt />} />
+          {/* Admin-only routes for prebuilt planes */}
+          {isAdmin && <Route path="/add-prebuilt" element={<AddPrebuiltPlane />} />}
+          {isAdmin && <Route path="/edit-prebuilt/:id" element={<EditPrebuiltPlane />} />}
           <Route path="*" element={<Navigate to="/" />} />
         </Routes>
         {showOrdersMenu && isAdmin && <PlaneOrdersMenu onClose={() => setShowOrdersMenu(false)} />}

@@ -32,24 +32,32 @@ const PlaneForm: React.FC = () => {
 		}
 	};
 
-	const handleSubmit = (e: React.FormEvent) => {
+	const handleSubmit = async (e: React.FormEvent) => {
 		e.preventDefault();
-		const stored = localStorage.getItem('planes');
-		const planes = stored ? JSON.parse(stored) : [];
-		const newPlane = {
-			id: Date.now().toString(),
-			name,
-			components,
-			image,
-			user_id: user ? user.id : null, // Add user_id if user is logged in
-		};
-		localStorage.setItem('planes', JSON.stringify([...planes, newPlane]));
-		navigate('/planes');
+		if (!user) {
+			alert('You must be logged in to add a plane.');
+			return;
+		}
+		const { error } = await import('../supabaseClient').then(({ supabase }) =>
+			supabase.from('planes').insert([
+				{
+					name,
+					components,
+					image,
+					user_id: user.id,
+				},
+			])
+		);
+		if (error) {
+			alert('Error saving plane: ' + error.message);
+		} else {
+			navigate('/planes');
+		}
 	};
 
 	return (
 		<>
-			<button onClick={() => navigate('/')} style={{ position: 'absolute', top: 16, left: 16, background: '#2de2e6', color: '#181c22', border: 'none', borderRadius: 8, padding: '6px 18px', fontWeight: 700, cursor: 'pointer', zIndex: 10 }}>Home</button>
+			{/* Home button removed, now in top banner dropdown */}
 			<form onSubmit={handleSubmit} style={{ maxWidth: 520, margin: '0 auto', padding: '24px', background: '#232a34', borderRadius: '12px', boxShadow: '0 2px 8px rgba(0,0,0,0.18)' }}>
 			<h2>Add New Plane</h2>
 			<div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '8px' }}>

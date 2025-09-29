@@ -66,11 +66,22 @@ const InspirationPreBuilt: React.FC = () => {
         <div style={{ display: 'flex', flexWrap: 'wrap', gap: 32, justifyContent: 'center' }}>
           {planes.length === 0 && <div style={{ color: accent }}>No inspiration planes found.</div>}
           {planes.map(plane => (
-            <div key={plane.id} style={{ background: '#232a34', borderRadius: 14, boxShadow: '0 2px 8px rgba(0,0,0,0.18)', width: 280, padding: 18, color: '#eaf6fb', display: 'flex', flexDirection: 'column', alignItems: 'center', position: 'relative' }}>
+            <div
+              key={plane.id}
+              style={{ background: '#232a34', borderRadius: 14, boxShadow: '0 2px 8px rgba(0,0,0,0.18)', width: 280, padding: 18, color: '#eaf6fb', display: 'flex', flexDirection: 'column', alignItems: 'center', position: 'relative', cursor: 'pointer' }}
+              onClick={() => {
+                if (isAdmin) {
+                  navigate(`/edit-prebuilt/${plane.id}`);
+                } else {
+                  navigate(`/view-prebuilt/${plane.id}`);
+                }
+              }}
+              title={isAdmin ? 'Edit this plane' : 'View details'}
+            >
               {isAdmin && (
                 <button
                   style={{ position: 'absolute', top: 10, right: 10, background: accent, color: '#181c22', border: 'none', borderRadius: 6, padding: '4px 10px', fontWeight: 700, cursor: 'pointer', zIndex: 2 }}
-                  onClick={() => navigate(`/edit-prebuilt/${plane.id}`)}
+                  onClick={e => { e.stopPropagation(); navigate(`/edit-prebuilt/${plane.id}`); }}
                 >
                   Edit
                 </button>

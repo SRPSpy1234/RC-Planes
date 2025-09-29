@@ -7,6 +7,7 @@ import EditPlane from './pages/EditPlane';
 import InspirationPreBuilt from './pages/InspirationPreBuilt';
 import AddPrebuiltPlane from './pages/AddPrebuiltPlane';
 import EditPrebuiltPlane from './pages/EditPrebuiltPlane';
+import ViewPrebuiltPlane from './pages/ViewPrebuiltPlane';
 import ViewPlane from './pages/ViewPlane';
 import OrderFormPage from './pages/OrderFormPage';
 import PlaneOrdersMenu from './components/PlaneOrdersMenu';
@@ -241,6 +242,7 @@ const App: React.FC = () => {
           <Route path="/view/:id" element={<ViewPlane />} />
           <Route path="/order" element={<OrderFormPage />} />
           <Route path="/inspiration-prebuilt" element={<InspirationPreBuilt />} />
+          <Route path="/view-prebuilt/:id" element={<ViewPrebuiltPlane />} />
           {/* Admin-only routes for prebuilt planes */}
           {isAdmin && <Route path="/add-prebuilt" element={<AddPrebuiltPlane />} />}
           {isAdmin && <Route path="/edit-prebuilt/:id" element={<EditPrebuiltPlane />} />}

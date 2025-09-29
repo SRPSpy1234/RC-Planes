@@ -15,6 +15,8 @@ const EditPrebuiltPlane: React.FC = () => {
     const [image, setImage] = useState<string | null>(null);
     const [components, setComponents] = useState<{ [key: string]: { value: string; link: string } }>({});
     const [price, setPrice] = useState<number | ''>('');
+    const [adminNotes, setAdminNotes] = useState('');
+    const [notes, setNotes] = useState('');
     const [error, setError] = useState('');
     const [loading, setLoading] = useState(true);
 
@@ -38,6 +40,8 @@ const EditPrebuiltPlane: React.FC = () => {
                     setImage(data.image || null);
                     setComponents(data.components || {});
                     setPrice(data.price ?? '');
+                    setAdminNotes(data.admin_notes || '');
+                    setNotes(data.notes || '');
                     setLoading(false);
                 }
             });
@@ -73,7 +77,7 @@ const EditPrebuiltPlane: React.FC = () => {
         }
         const { error } = await supabase
             .from('planes')
-            .update({ name, type, skill, image, components, price: price === '' ? null : Number(price) })
+            .update({ name, type, skill, image, components, price: price === '' ? null : Number(price), admin_notes: adminNotes, notes })
             .eq('id', id)
             .is('user_id', null);
         if (error) setError(error.message);
@@ -170,9 +174,27 @@ const EditPrebuiltPlane: React.FC = () => {
                         />
                     </div>
                 ))}
-                <div style={{ display: 'flex', gap: '10px', marginTop: '14px' }}>
-                    <button type="submit" style={{ flex: 1, minWidth: 0 }}>Save</button>
-                    <button type="button" style={{ flex: 1, minWidth: 0, background: '#ff6f61', color: '#fff' }} onClick={handleDelete}>Delete</button>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', marginTop: '14px' }}>
+                    {/* Public notes visible to all users */}
+                    <label style={{ color: '#2de2e6', fontWeight: 600, marginBottom: 4 }}>Notes (visible to all users):</label>
+                    <textarea
+                        value={notes}
+                        onChange={e => setNotes(e.target.value)}
+                        style={{ minHeight: 60, borderRadius: 6, padding: 8, fontSize: 15, marginBottom: 10 }}
+                        placeholder="Notes for this prebuilt plane..."
+                    />
+                    {/* Admin notes only visible to admin */}
+                    <label style={{ color: '#2de2e6', fontWeight: 600, marginBottom: 4 }}>Admin Notes (only visible to admin):</label>
+                    <textarea
+                        value={adminNotes}
+                        onChange={e => setAdminNotes(e.target.value)}
+                        style={{ minHeight: 60, borderRadius: 6, padding: 8, fontSize: 15, marginBottom: 10 }}
+                        placeholder="Internal notes for this prebuilt plane..."
+                    />
+                    <div style={{ display: 'flex', gap: '10px' }}>
+                        <button type="submit" style={{ flex: 1, minWidth: 0 }}>Save</button>
+                        <button type="button" style={{ flex: 1, minWidth: 0, background: '#ff6f61', color: '#fff' }} onClick={handleDelete}>Delete</button>
+                    </div>
                 </div>
             </form>
         </div>

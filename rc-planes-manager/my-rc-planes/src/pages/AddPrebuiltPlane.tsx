@@ -14,6 +14,7 @@ const AddPrebuiltPlane: React.FC = () => {
     const [image, setImage] = useState<string | null>(null);
     const [components, setComponents] = useState<{ [key: string]: { value: string; link: string } }>({});
     const [price, setPrice] = useState<number | ''>('');
+    const [notes, setNotes] = useState('');
     const [error, setError] = useState('');
     const [loading, setLoading] = useState(false);
 
@@ -49,7 +50,7 @@ const AddPrebuiltPlane: React.FC = () => {
         }
         const { error } = await supabase
             .from('planes')
-            .insert([{ name, type, skill, image, components, price: price === '' ? null : Number(price), user_id: null }]);
+            .insert([{ name, type, skill, image, components, price: price === '' ? null : Number(price), notes, user_id: null }]);
         setLoading(false);
         if (error) setError(error.message);
         else navigate('/inspiration-prebuilt');
@@ -126,6 +127,15 @@ const AddPrebuiltPlane: React.FC = () => {
                         />
                     </div>
                 ))}
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 0, marginTop: 12, marginBottom: 10 }}>
+                    <label style={{ color: '#2de2e6', fontWeight: 600, marginBottom: 4 }}>Notes (visible to all users):</label>
+                    <textarea
+                        value={notes}
+                        onChange={e => setNotes(e.target.value)}
+                        style={{ minHeight: 60, borderRadius: 6, padding: 8, fontSize: 15 }}
+                        placeholder="Notes for this prebuilt plane..."
+                    />
+                </div>
                 <div style={{ display: 'flex', gap: '10px', marginTop: '14px' }}>
                     <button type="submit" style={{ flex: 1, minWidth: 0 }} disabled={loading}>Save</button>
                 </div>

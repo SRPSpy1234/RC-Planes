@@ -9,14 +9,6 @@ const defaultParts = ['Motor', 'ESC', 'Battery', 'Servos', 'Propeller', 'Receive
 
 const OrderFormPage: React.FC = () => {
   const { user } = useAuth();
-  if (!user || !user.email_confirmed_at) {
-    return (
-      <div style={{ maxWidth: 480, margin: '48px auto', background: '#232a34', borderRadius: 12, boxShadow: '0 2px 8px rgba(0,0,0,0.18)', padding: 32, color: '#eaf6fb', textAlign: 'center' }}>
-        <h2 style={{ color: accent }}>Login Required</h2>
-        <p>You must be logged in with a confirmed email address to place an order.</p>
-      </div>
-    );
-  }
   const [form, setForm] = useState({
     name: '',
     email: '',
@@ -32,6 +24,15 @@ const OrderFormPage: React.FC = () => {
   });
   const navigate = useNavigate();
   const [submitted, setSubmitted] = useState(false);
+
+  if (!user || !user.email_confirmed_at) {
+    return (
+      <div style={{ maxWidth: 480, margin: '48px auto', background: '#232a34', borderRadius: 12, boxShadow: '0 2px 8px rgba(0,0,0,0.18)', padding: 32, color: '#eaf6fb', textAlign: 'center' }}>
+        <h2 style={{ color: accent }}>Login Required</h2>
+        <p>You must be logged in with a confirmed email address to place an order.</p>
+      </div>
+    );
+  }
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     setForm({ ...form, [e.target.name]: e.target.value });

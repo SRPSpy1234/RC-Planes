@@ -80,7 +80,7 @@ function LoginModal({ onClose }: { onClose: () => void }) {
         setError('Username and email required');
         return;
       }
-      const { error, data } = await supabase.auth.signUp({
+      const { error } = await supabase.auth.signUp({
         email,
         password,
         options: { data: { username } },

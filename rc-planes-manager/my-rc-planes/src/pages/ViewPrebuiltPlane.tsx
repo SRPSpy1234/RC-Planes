@@ -6,7 +6,6 @@ const defaultParts = ['Motor', 'ESC', 'Battery', 'Servos', 'Propeller', 'Receive
 
 const ViewPrebuiltPlane: React.FC = () => {
     const { id } = useParams();
-    const navigate = useNavigate();
     const [plane, setPlane] = useState<any>(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
